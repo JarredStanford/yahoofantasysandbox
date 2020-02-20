@@ -58,6 +58,8 @@ passport.use(
             refreshToken: refreshToken
           };
 
+          console.log(userObj)
+
           app.yf.setUserToken(accessToken);
 
           return done(null, userObj);
