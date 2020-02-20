@@ -106,6 +106,7 @@ app.get("/data/:resource/:subresource", routes.getData);
 
 app.get(
   "/auth/yahoo",
+  res.header("Access-Control-Allow-Origin", "*"),
   passport.authenticate("oauth2", { failureRedirect: "/login" }),
   function (req, res, user) {
     res.redirect("/");
