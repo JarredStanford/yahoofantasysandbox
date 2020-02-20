@@ -58,8 +58,6 @@ passport.use(
             refreshToken: refreshToken
           };
 
-          console.log(userObj)
-
           app.yf.setUserToken(accessToken);
 
           return done(null, userObj);
@@ -118,6 +116,7 @@ app.get(
   "/auth/yahoo/callback",
   passport.authenticate("oauth2", { failureRedirect: "/login" }),
   function (req, res) {
+    console.log(req)
     res.redirect("http://localhost:3000/");
   }
 );
