@@ -116,7 +116,7 @@ app.get(
   "/auth/yahoo/callback",
   passport.authenticate("oauth2", { failureRedirect: "/login" }),
   function (req, res) {
-    res.redirect(req.session.redirect || "/");
+    res.redirect(req.session.redirect || "http://localhost:3000/");
   }
 );
 
