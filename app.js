@@ -6,6 +6,7 @@ var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 var session = require("express-session");
 var RedisStore = require("connect-redis")(session);
+var cors = require('cors')
 
 var passport = require("passport");
 var request = require("request");
@@ -15,11 +16,11 @@ var APP_KEY = process.env.APP_KEY || require("./conf.js").APP_KEY;
 var APP_SECRET = process.env.APP_SECRET || require("./conf.js").APP_SECRET;
 var routes = require("./routes");
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser(function (user, done) {
   done(null, user);
 });
 
-passport.deserializeUser(function(obj, done) {
+passport.deserializeUser(function (obj, done) {
   done(null, obj);
 });
 
@@ -34,7 +35,7 @@ passport.use(
         (process.env.APP_URL || require("./conf.js").APP_URL) +
         "/auth/yahoo/callback"
     },
-    function(accessToken, refreshToken, params, profile, done) {
+    function (accessToken, refreshToken, params, profile, done) {
       var options = {
         url:
           "https://social.yahooapis.com/v1/user/" +
@@ -47,7 +48,7 @@ passport.use(
         }
       };
 
-      request(options, function(error, response, body) {
+      request(options, function (error, response, body) {
         if (!error && response.statusCode == 200) {
           var userObj = {
             id: body.profile.guiid,
@@ -80,6 +81,7 @@ app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(cors())
 app.use(
   session({
     // store: new RedisStore({
@@ -104,7 +106,7 @@ app.get("/data/:resource/:subresource", routes.getData);
 app.get(
   "/auth/yahoo",
   passport.authenticate("oauth2", { failureRedirect: "/login" }),
-  function(req, res, user) {
+  function (req, res, user) {
     res.redirect("/");
   }
 );
@@ -112,12 +114,12 @@ app.get(
 app.get(
   "/auth/yahoo/callback",
   passport.authenticate("oauth2", { failureRedirect: "/login" }),
-  function(req, res) {
+  function (req, res) {
     res.redirect(req.session.redirect || "/");
   }
 );
 
-app.get("/logout", function(req, res) {
+app.get("/logout", function (req, res) {
   // todo: fix this...
   req.logout();
   res.redirect(req.session.redirect || "/");
@@ -141,14 +143,14 @@ function checkAuth(req, res, next) {
 }
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   var err = new Error("Not Found");
   err.status = 404;
   next(err);
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
